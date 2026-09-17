@@ -93,4 +93,32 @@ return (success: bool, message: str)
 - منطق دیتابیس (مدل‌ها، query ها، توابع CRUD): فایل جدا (`database_test.py` یا معادلش)
 - هیچ کوئری خام دیتابیسی مستقیم داخل route ها نوشته نمی‌شه — همیشه از طریق توابع لایه‌ی دیتابیس صدا زده می‌شه.
 
+## ۸. استاندارد پیام‌های Commit
+
+این پروژه از الگوی Conventional Commits همراه با scope استفاده می‌کنه:
+
+<div dir="ltr">
+
+```
+type(scope): description
+```
+
+</div>
+
+type یکی از این مقادیره: feat, fix, refactor, docs, chore, test
+scope بخش مشخصی از پروژه‌ست که کامیت به آن مربوطه: auth, posts, profile, tags, db, config
+اگه کامیت سطح کل ریپو باشه (مثل مستندات یا تنظیمات پایه، نه یک فیچر خاص)، scope گذاشته نمی‌شه.
+پیام‌ها به انگلیسی، با فعل امری، و زیر ۵۰ کاراکتر برای خط اول نوشته می‌شن.
+
+مثال‌ها:
+
+<div dir="ltr">
+
+```
+docs: add initial README and project conventions
+feat(auth): add user registration route
+refactor(db): migrate from global session to scoped session
+```
+
+</div>
 </div>
