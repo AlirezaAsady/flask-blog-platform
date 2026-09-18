@@ -1,5 +1,5 @@
 import os
-from flask import Flask, url_for, redirect, render_template
+from flask import Flask, url_for, redirect, render_template, flash
 from dotenv import load_dotenv
 from models import get_all_users__db
 
@@ -21,7 +21,8 @@ def home():
 @app.route("/users")
 def users_list():
     success, message, all_users = get_all_users__db()
-    print(success, message)
+    # print(success, message)
+    flash(message, "success")
     return render_template("users.html", users=all_users)
 
 
