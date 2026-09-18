@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My App</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <nav>
+      <a href="#">کاربران</a>
+      <a href="#">افزودن</a>
+      <a href="#">ورود</a>
+    </nav>
+
+    {% block content %} {% endblock %}
+  </body>
+</html>

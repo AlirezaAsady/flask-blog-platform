@@ -1,6 +1,14 @@
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, DateTime
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import create_engine, Column, Integer, String, select, Text, DateTime
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+# ----------------*** Database Setup ***--------------
+# ---------------- app: database_connection -----------
+# اتصال به یک فایل SQLite (اگر فایل وجود نداشته باشه، ساخته می‌شه)
+engine = create_engine(
+    "sqlite:///database.db",
+    connect_args={"check_same_thread": False},  # only for sqlite
+    echo=True,
+)
 
 # ---------------- app: orm_base ----------------------
 # create base class for declaring tables
@@ -22,3 +30,24 @@ class User(Base):
 
     def __repr__(self):
         return f"<user id= {self.id}: username= {self.username} firstname= {self.firstname} lastname= {self.lastname} age= {self.age}>"
+
+
+# ----------------------------------------------------
+
+# ----------------*** Session Setup ***---------------
+# ---------------- app: database_session --------------
+# ساخت جدول‌ها در دیتابیس (فقط اگر وجود نداشته باشن)
+Base.metadata.create_all(engine)
+
+# ساخت session
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+session = SessionLocal()
+
+# -----------------------------------------------------
+
+
+# ---------------- users: list_all --------------------
+def get_all_users__db():
+    stmt = select(User.id, User.firstname, User.lastname, User.age)
+    result = session.execute(stmt).all()
+    return True, "users loaded successfully", result
