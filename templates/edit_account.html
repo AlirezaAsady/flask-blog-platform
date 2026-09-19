@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block content %} {% if user_data %}
+
+<form method="POST" action="{{ url_for('edit_account') }}">
+  <table>
+    <thead>
+      <tr>
+        <th>نام کاربری</th>
+        <th>رمز</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <input type="text" name="username" value="{{ user_data.username }}" />
+        </td>
+        <td>
+          <input type="password" name="password" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <thead>
+      <tr>
+        <th>نام</th>
+        <th>نام_خانوادگی</th>
+        <th>سن</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <input
+            type="text"
+            name="firstname"
+            value="{{ user_data.firstname }}"
+          />
+        </td>
+        <td>
+          <input type="text" name="lastname" value="{{ user_data.lastname }}" />
+        </td>
+        <td>
+          <input type="number" name="age" value="{{ user_data.age }}" />
+        </td>
+        <td>
+          <button type="submit">ویرایش</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>
+<hr />
+<form
+  method="POST"
+  action="{{ url_for('delete_account') }}"
+  onsubmit="return confirm('آیا مطمئنید؟ این عملیات غیرقابل بازگشت است.');"
+>
+  <button type="submit" class="delete-account-btn">حذف حساب کاربری</button>
+</form>
+{% endif %} {% endblock %}

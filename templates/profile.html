@@ -1,0 +1,54 @@
+{% extends "base.html" %} {% block content %}
+<h1>پروفایل من</h1>
+
+{% if profile %}
+<div class="profile-view">
+  {% if profile.avatar_url %}
+  <img
+    src="{{ url_for('static', filename=profile.avatar_url) }}"
+    alt="آواتار کاربر"
+    class="profile-avatar"
+    onerror="
+      this.onerror = null;
+      this.src = '';
+    "
+  />
+  {% else %}
+  <p>آواتاری تنظیم نشده</p>
+  {% endif %}
+
+  <p><strong>بیوگرافی:</strong> {{ profile.bio or "چیزی نوشته نشده" }}</p>
+</div>
+{% else %}
+<p>شما هنوز پروفایلی نساخته‌اید. فرم زیر را پر کنید:</p>
+{% endif %}
+
+<form method="POST" action="{{ url_for('profile_manage') }}">
+  <label for="bio">بیوگرافی</label>
+  <textarea id="bio" name="bio" placeholder="درباره‌ی خودتان بنویسید...">
+{{ profile.bio if profile else "" }}</textarea
+  >
+
+  <label for="avatar_url">آدرس تصویر آواتار</label>
+  <input
+    type="text"
+    id="avatar_url"
+    name="avatar_url"
+    placeholder="https://example.com/avatar.jpg"
+    value="{{ profile.avatar_url if profile else '' }}"
+  />
+
+  <button type="submit">
+    {% if profile %}ذخیره‌ی تغییرات{% else %}ساخت پروفایل{% endif %}
+  </button>
+</form>
+
+<hr />
+<form
+  method="POST"
+  action="{{ url_for('delete_account') }}"
+  onsubmit="return confirm('آیا مطمئنید؟ این عملیات غیرقابل بازگشت است.');"
+>
+  <button type="submit" class="delete-account-btn">حذف حساب کاربری</button>
+</form>
+{% endblock %}

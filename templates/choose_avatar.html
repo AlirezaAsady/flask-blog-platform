@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block content %}
+<h1>انتخاب آواتار</h1>
+<p>یکی از آواتارهای زیر را انتخاب کنید:</p>
+
+<div class="avatar-grid">
+  {% for avatar in avatars %}
+  <form method="POST" action="{{ url_for('choose_avatar') }}">
+    <input type="hidden" name="avatar_url" value="{{ avatar }}" />
+    <button type="submit" class="avatar-option-btn">
+      <img
+        src="{{ url_for('static', filename='avatars/' + avatar) }}"
+        alt="گزینه‌ی آواتار"
+        class="avatar-option-img"
+      />
+    </button>
+  </form>
+  {% endfor %}
+</div>
+{% endblock %}
