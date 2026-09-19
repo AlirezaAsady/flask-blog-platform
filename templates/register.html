@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block content %}
+<h1>افزودن کاربر جدید</h1>
+<form method="POST" action="{{ url_for('auth_register') }}">
+  <input type="text" name="username" placeholder="نام کاربری" />
+  <input type="text" name="password" placeholder="رمز" />
+  <input type="text" name="firstname" placeholder="نام " />
+  <input type="text" name="lastname" placeholder="نام_خانوادگی" />
+  <input type="number" name="age" placeholder="سن" />
+  <button type="submit">افزودن</button>
+</form>
+{% endblock %}

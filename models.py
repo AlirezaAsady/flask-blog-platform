@@ -1,5 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, select, Text, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.exc import IntegrityError
+from werkzeug.security import generate_password_hash, check_password_hash
 from log_setup import get_logger
 
 logger = get_logger("models")
@@ -49,6 +51,7 @@ session = SessionLocal()
 # -----------------------------------------------------
 
 
+# -------------------* USERS *-------------------------
 # ---------------- users: list_all --------------------
 def get_all_users__db():
     stmt = select(User.id, User.firstname, User.lastname, User.age)
@@ -58,3 +61,38 @@ def get_all_users__db():
         return False, f"Failed to fetch users: {e}", None
     else:
         return True, "users loaded successfully", result
+
+
+# ---------------- users: create ----------------------
+def create_user__db(username, password, firstname=None, lastname=None, age=None):
+    try:
+        new_emp = User(
+            username=username,
+            password=generate_password_hash(password),
+            firstname=firstname,
+            lastname=lastname,
+            age=age,
+        )
+        session.add(new_emp)
+        session.commit()
+        return True, "Registration successful"
+    except IntegrityError:
+        session.rollback()
+        return False, "This username is already taken"
+    except Exception as e:
+        session.rollback()
+        return False, "Something went wrong, please try again"
+
+
+# ---------------- users: login -----------------------
+def login_user__db(username, password):
+    stmt = select(User).where(User.username == username)
+    result = session.execute(stmt).scalar_one_or_none()
+
+    if result is None:
+        return False, "Invalid username or password", None
+
+    if check_password_hash(result.password, password):
+        return True, "Login successful", result.id
+    else:
+        return False, "Invalid username or password", None

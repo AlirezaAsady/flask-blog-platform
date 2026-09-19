@@ -1,0 +1,8 @@
+{% extends "base.html" %} {% block content %}
+<h1>ورود</h1>
+<form method="POST" action="{{ url_for('auth_login') }}">
+  <input type="text" name="username" placeholder="نام کاربری" />
+  <input type="text" name="password" placeholder="رمز" />
+  <button type="submit">ورود</button>
+</form>
+{% endblock %}

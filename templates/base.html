@@ -11,9 +11,12 @@
   </head>
   <body>
     <nav>
-      <a href="#">کاربران</a>
-      <a href="#">افزودن</a>
-      <a href="#">ورود</a>
+      <a href="{{ url_for('users_list') }}">کاربران</a>
+      <a href="{{ url_for('auth_register') }}">افزودن</a>
+      <a href="{{ url_for('auth_login') }}">ورود</a>
+      <form method="POST" action="{{ url_for('auth_logout') }}">
+        <button type="submit">خروج</button>
+      </form>
     </nav>
 
     {% block content %} {% endblock %} {% with messages =
