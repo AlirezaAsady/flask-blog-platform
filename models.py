@@ -1,5 +1,8 @@
 from sqlalchemy import create_engine, Column, Integer, String, select, Text, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
+from log_setup import get_logger
+
+logger = get_logger("models")
 
 # ----------------*** Database Setup ***--------------
 # ---------------- app: database_connection -----------
@@ -49,5 +52,9 @@ session = SessionLocal()
 # ---------------- users: list_all --------------------
 def get_all_users__db():
     stmt = select(User.id, User.firstname, User.lastname, User.age)
-    result = session.execute(stmt).all()
-    return True, "users loaded successfully", result
+    try:
+        result = session.execute(stmt).all()
+    except Exception as e:
+        return False, f"Failed to fetch users: {e}", None
+    else:
+        return True, "users loaded successfully", result
