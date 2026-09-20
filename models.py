@@ -7,6 +7,7 @@ from sqlalchemy import (
     Text,
     DateTime,
     ForeignKey,
+    Table,
 )
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy.exc import IntegrityError
@@ -68,10 +69,22 @@ class Profile(Base):
 
 
 # ---------------# models: post_tags #-----------------
-# TODO: Table for tag and post
+post_tags = Table(
+    "post_tags",
+    Base.metadata,
+    Column("post_id", Integer, ForeignKey("posts.post_id"), primary_key=True),
+    Column("tag_id", Integer, ForeignKey("tags.id"), primary_key=True),
+)
+
 
 # ---------------- models: tag ------------------------
-# TODO: create tag
+class Tag(Base):
+    __tablename__ = "tags"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False, unique=True)
+
+    a_posts = relationship("Post", secondary=post_tags, back_populates="a_tags")
 
 
 # ---------------- models: post -----------------------
@@ -86,6 +99,7 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     a_user = relationship("User", back_populates="a_posts")
+    a_tags = relationship("Tag", secondary=post_tags, back_populates="a_posts")
 
     def __repr__(self):
         return f"<post id= {self.post_id}: title= {self.title} content= {self.content} created_at= {self.created_at}>"
@@ -351,3 +365,65 @@ def get_all_posts__db(title_filter=None, user_filter=None):
 
 
 # -----------------------------------------------------
+
+
+# --------------------* Tag *--------------------------
+# ------------------ Tag: create ----------------------
+def get_or_create_tag__db(tag_name):
+    try:
+        tag = session.query(Tag).filter(Tag.name == tag_name).one_or_none()
+        if tag:
+            return tag
+
+        try:
+            new_tag = Tag(name=tag_name)
+            session.add(new_tag)
+            session.flush()
+            return new_tag
+        except IntegrityError:
+            session.rollback()
+            return session.query(Tag).filter(Tag.name == tag_name).one()
+
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Error in get_or_create_tag__db(tag_name={tag_name}): {e}")
+        return None
+
+
+def add_tag_to_post__db(post_id, tag_name):
+    try:
+        post = session.query(Post).filter(Post.post_id == post_id).one_or_none()
+        if not post:
+            return False, "پست پیدا نشد"
+
+        tag = get_or_create_tag__db(tag_name)
+        if not tag:
+            return False, "خطا در ساخت یا پیدا کردن تگ"
+
+        if tag not in post.a_tags:
+            post.a_tags.append(tag)
+            session.commit()
+            return True, "تگ با موفقیت اضافه شد"
+
+        return True, "این تگ از قبل روی این پست وجود دارد"
+
+    except Exception as e:
+        session.rollback()
+        logger.error(
+            f"Error in add_tag_to_post__db(post_id={post_id}, tag_name={tag_name}): {e}"
+        )
+        return False, "Something went wrong, please try again"
+
+
+def get_posts_by_tag__db(tag_name):
+    try:
+        tag = session.query(Tag).filter(Tag.name == tag_name).one_or_none()
+        if not tag:
+            return True, "تگی با این نام پیدا نشد", []
+
+        return True, "Posts loaded successfully", tag.a_posts
+
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Error in get_posts_by_tag__db(tag_name={tag_name}): {e}")
+        return False, "Something went wrong, please try again", None

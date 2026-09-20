@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block content %}
+<h1>پست‌های با تگ: {{ tag_name }}</h1>
+
+{% if posts %}
+<table>
+  <thead>
+    <tr>
+      <th>کاربر</th>
+      <th>عنوان</th>
+      <th>محتوا</th>
+      <th>تگ‌ها</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for post in posts %}
+    <tr>
+      <td>{{ post.a_user.username }}</td>
+      <td>{{ post.title }}</td>
+      <td>{{ post.content }}</td>
+      <td>
+        {% for tag in post.a_tags %}
+        <a
+          href="{{ url_for('posts_by_tag', tag_name=tag.name) }}"
+          class="tag-badge"
+          >{{ tag.name }}</a
+        >
+        {% endfor %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>پستی با این تگ پیدا نشد</p>
+{% endif %}
+<a href="{{ url_for('posts_list_all') }}">بازگشت به همه‌ی پست‌ها</a>
+{% endblock %}

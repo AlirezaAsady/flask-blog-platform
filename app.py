@@ -1,4 +1,5 @@
 import os
+import re
 import logging
 from flask import Flask, request, url_for, redirect, render_template, flash, session
 from models import (
@@ -16,6 +17,8 @@ from models import (
     delete_post__db,
     update_post__db,
     get_all_posts__db,
+    add_tag_to_post__db,
+    get_posts_by_tag__db,
 )
 from dotenv import load_dotenv
 from log_setup import get_logger
@@ -46,6 +49,12 @@ def login_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
+
+# ---------------- tag --------------------------------
+def parse_tag_input(raw_input):
+    tags = re.split(r"[,\s]+", raw_input.strip())
+    return [tag for tag in tags if tag]
 
 
 # -------------------* HOME *--------------------------
@@ -284,13 +293,12 @@ def posts_create():
     if request.method == "POST":
         title = request.form.get("title")
         content = request.form.get("content")
-        # tags_raw = request.form.get("tags", "")
+        tags_raw = request.form.get("tags", "")
         success, message, result = create_post__db(user_id, title, content)
         if success:
-            # TODO: tags
-            # tags = parse_tag_input(tags_raw)
-            # for tag_name in tags:
-            #     add_tag_to_post__db(result.post_id, tag_name)
+            tags = parse_tag_input(tags_raw)
+            for tag_name in tags:
+                add_tag_to_post__db(result.post_id, tag_name)
 
             flash(message, "success")
             flash(
@@ -383,6 +391,19 @@ def posts_list_all():
 
 
 # ------------------------------------------------------
+
+
+# ----------------* tag *--------------------------------
+# ---------------- tag: posts_by_tag --------------------
+@app.route("/users/posts/tag/<tag_name>")
+def posts_by_tag(tag_name):
+    success, message, posts = get_posts_by_tag__db(tag_name)
+
+    if not success:
+        flash(message, "error")
+        posts = []
+
+    return render_template("posts_by_tag.html", posts=posts, tag_name=tag_name)
 
 
 # ---------------*** Error Handler ***------------------

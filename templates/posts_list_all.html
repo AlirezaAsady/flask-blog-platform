@@ -45,7 +45,15 @@
       <td>{{ post.a_user.username }}</td>
       <td>{{ post.title }}</td>
       <td>{{ post.content }}</td>
-      <td></td>
+      <td>
+        {% for tag in post.a_tags %}
+        <a
+          href="{{ url_for('posts_by_tag', tag_name=tag.name) }}"
+          class="tag-badge"
+          >{{ tag.name }}</a
+        >
+        {% endfor %}
+      </td>
       <td>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
     </tr>
     {% endfor %}
