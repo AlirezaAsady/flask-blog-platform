@@ -153,13 +153,6 @@ nav a:hover {
   border-collapse: collapse;
 }
 
-.posts-owned-table th,
-.posts-owned-table td {
-  padding: 6px 8px;
-  vertical-align: middle;
-  word-break: break-word;
-}
-
 .posts-owned-table th:nth-child(1),
 .posts-owned-table td:nth-child(1) {
   width: 5%;
