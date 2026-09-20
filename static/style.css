@@ -4,6 +4,18 @@ body {
   margin: 0;
 }
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 6px 8px;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
 td form {
   display: inline-block;
   margin: 0 4px;
@@ -135,49 +147,49 @@ nav a:hover {
   background-color: #1d4ed8;
 }
 
-table {
+.posts-owned-table {
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
 }
 
-th,
-td {
+.posts-owned-table th,
+.posts-owned-table td {
   padding: 6px 8px;
   vertical-align: middle;
   word-break: break-word;
 }
 
-th:nth-child(1),
-td:nth-child(1) {
+.posts-owned-table th:nth-child(1),
+.posts-owned-table td:nth-child(1) {
   width: 5%;
-} /* شناسه */
-th:nth-child(2),
-td:nth-child(2) {
+}
+.posts-owned-table th:nth-child(2),
+.posts-owned-table td:nth-child(2) {
   width: 15%;
-} /* عنوان */
-th:nth-child(3),
-td:nth-child(3) {
+}
+.posts-owned-table th:nth-child(3),
+.posts-owned-table td:nth-child(3) {
   width: 26%;
-} /* محتوا */
-th:nth-child(4),
-td:nth-child(4) {
+}
+.posts-owned-table th:nth-child(4),
+.posts-owned-table td:nth-child(4) {
   width: 12%;
-} /* ایجاد */
-th:nth-child(5),
-td:nth-child(5) {
+}
+.posts-owned-table th:nth-child(5),
+.posts-owned-table td:nth-child(5) {
   width: 8%;
-} /* ویرایش */
-th:nth-child(6),
-td:nth-child(6) {
+}
+.posts-owned-table th:nth-child(6),
+.posts-owned-table td:nth-child(6) {
   width: 26%;
-} /* تگ‌ها */
-th:nth-child(7),
-td:nth-child(7) {
+}
+.posts-owned-table th:nth-child(7),
+.posts-owned-table td:nth-child(7) {
   width: 8%;
-} /* حذف */
+}
 
-td input[type="text"] {
+.posts-owned-table input[type="text"] {
   width: 100%;
   box-sizing: border-box;
 }
