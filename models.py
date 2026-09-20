@@ -301,7 +301,12 @@ def create_post__db(uid, title, content):
 # ---------------- posts: list_by_user ----------------
 def get_posts_by_user__db(uid):
     try:
-        posts = session.query(Post).filter(Post.user_id == uid).all()
+        posts = (
+            session.query(Post)
+            .filter(Post.user_id == uid)
+            .order_by(Post.created_at.desc())
+            .all()
+        )
         return True, "Load_post successful", posts
     except Exception as e:
         session.rollback()
@@ -399,11 +404,15 @@ def get_or_create_tag__db(tag_name):
         return None
 
 
-def add_tag_to_post__db(post_id, tag_name):
+def add_tag_to_post__db(post_id, tag_name, user_id):
     try:
-        post = session.query(Post).filter(Post.post_id == post_id).one_or_none()
+        post = (
+            session.query(Post)
+            .filter(Post.post_id == post_id, Post.user_id == user_id)
+            .one_or_none()
+        )
         if not post:
-            return False, "پست پیدا نشد"
+            return False, "پست یافت نشد یا متعلق به شما نیست"
 
         tag = get_or_create_tag__db(tag_name)
         if not tag:
@@ -419,7 +428,36 @@ def add_tag_to_post__db(post_id, tag_name):
     except Exception as e:
         session.rollback()
         logger.error(
-            f"Error in add_tag_to_post__db(post_id={post_id}, tag_name={tag_name}): {e}"
+            f"Error in add_tag_to_post__db(post_id={post_id}, tag_name={tag_name}, user_id={user_id}): {e}"
+        )
+        return False, "Something went wrong, please try again"
+
+
+def remove_tag_from_post__db(post_id, tag_name, user_id):
+    try:
+        post = (
+            session.query(Post)
+            .filter(Post.post_id == post_id, Post.user_id == user_id)
+            .one_or_none()
+        )
+        if not post:
+            return False, "پست یافت نشد یا متعلق به شما نیست"
+
+        tag = session.query(Tag).filter(Tag.name == tag_name).one_or_none()
+        if not tag:
+            return False, "تگی با این نام در سیستم وجود ندارد"
+
+        if tag not in post.a_tags:
+            return True, "این تگ از قبل به این پست وصل نبود"
+
+        post.a_tags.remove(tag)
+        session.commit()
+        return True, "تگ با موفقیت حذف شد"
+
+    except Exception as e:
+        session.rollback()
+        logger.error(
+            f"Error in remove_tag_from_post__db(post_id={post_id}, tag_name={tag_name}, user_id={user_id}): {e}"
         )
         return False, "Something went wrong, please try again"
 

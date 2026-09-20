@@ -10,11 +10,13 @@
 <table>
   <thead>
     <tr>
-      <th>شناسه</th>
+      <th>id</th>
       <th>عنوان</th>
       <th>محتوا</th>
       <th>ایجاد</th>
-      <th>عملیات</th>
+      <th>ویرایش</th>
+      <th>تگ‌ها</th>
+      <th>حذف</th>
     </tr>
   </thead>
   <tbody>
@@ -34,6 +36,25 @@
           <button type="submit">ویرایش</button>
         </form>
       </td>
+      <td>
+        <div class="tag-list">
+          {% for tag in post.a_tags %}
+          <span class="tag-badge">
+            {{ tag.name }}
+            <form method="POST" action="{{ url_for('posts_remove_tag') }}" class="tag-remove-form">
+              <input type="hidden" name="post_id" value="{{ post.post_id }}" />
+              <input type="hidden" name="tag_name" value="{{ tag.name }}" />
+              <button type="submit" class="tag-remove-btn" title="حذف تگ">×</button>
+            </form>
+          </span>
+          {% endfor %}
+        </div>
+        <form method="POST" action="{{ url_for('posts_add_tag') }}" class="tag-add-form">
+          <input type="hidden" name="post_id" value="{{ post.post_id }}" />
+          <input type="text" name="tag_name" placeholder="تگ جدید..." class="tag-add-input" />
+          <button type="submit" class="tag-add-btn">+</button>
+        </form>
+      </td>      
       <td>
         <form method="POST" action="{{ url_for('posts_delete') }}">
           <input type="hidden" name="post_id" value="{{ post.post_id }}" />

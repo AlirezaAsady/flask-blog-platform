@@ -18,6 +18,7 @@ from models import (
     update_post__db,
     get_all_posts__db,
     add_tag_to_post__db,
+    remove_tag_from_post__db,
     get_posts_by_tag__db,
 )
 from dotenv import load_dotenv
@@ -328,7 +329,7 @@ def posts_create():
         if success:
             tags = parse_tag_input(tags_raw)
             for tag_name in tags:
-                add_tag_to_post__db(result.post_id, tag_name)
+                add_tag_to_post__db(result.post_id, tag_name, user_id)
 
             logger.info(
                 "Post created (post_id=%s, user_id=%s)", result.post_id, user_id
@@ -448,6 +449,76 @@ def posts_by_tag(tag_name):
         posts = []
 
     return render_template("posts_by_tag.html", posts=posts, tag_name=tag_name)
+
+
+# ---------------- tag: add --------------------
+@app.route("/users/posts/tag/add", methods=["POST"])
+@login_required
+def posts_add_tag():
+    user_id = session["user_id"]
+    post_id = request.form.get("post_id")
+    tag_name = request.form.get("tag_name")
+
+    try:
+        post_id = int(post_id)
+    except (ValueError, TypeError):
+        flash("شناسه‌ی نامعتبر است", "error")
+        return redirect(url_for("posts_list_owned_update"))
+
+    success, message = add_tag_to_post__db(post_id, tag_name, user_id)
+
+    if success:
+        logger.info(
+            "Tag added (post_id=%s, tag_name=%s, user_id=%s)",
+            post_id,
+            tag_name,
+            user_id,
+        )
+        flash(message, "success")
+    else:
+        logger.warning(
+            "Tag addition failed (post_id=%s, tag_name=%s, user_id=%s)",
+            post_id,
+            tag_name,
+            user_id,
+        )
+        flash(message, "error")
+    return redirect(url_for("posts_list_owned_update"))
+
+
+# ---------------- tag: remove --------------------
+@app.route("/users/posts/tag/remove", methods=["POST"])
+@login_required
+def posts_remove_tag():
+    user_id = session["user_id"]
+    post_id = request.form.get("post_id")
+    tag_name = request.form.get("tag_name")
+
+    try:
+        post_id = int(post_id)
+    except (ValueError, TypeError):
+        flash("شناسه‌ی نامعتبر است", "error")
+        return redirect(url_for("posts_list_owned_update"))
+
+    success, message = remove_tag_from_post__db(post_id, tag_name, user_id)
+
+    if success:
+        logger.info(
+            "Tag deleted (post_id=%s, tag_name=%s, user_id=%s)",
+            post_id,
+            tag_name,
+            user_id,
+        )
+        flash(message, "success")
+    else:
+        logger.warning(
+            "Tag deletion failed (post_id=%s, tag_name=%s, user_id=%s)",
+            post_id,
+            tag_name,
+            user_id,
+        )
+        flash(message, "error")
+    return redirect(url_for("posts_list_owned_update"))
 
 
 # ---------------*** Error Handler ***------------------
