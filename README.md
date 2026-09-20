@@ -13,11 +13,11 @@ A small blog platform built with Flask, developed step by step to demonstrate so
 
 This project is being built incrementally; items are checked off as they're implemented and committed.
 
-- [ ] User registration & authentication
-- [ ] Session-based login/logout
-- [ ] Create, edit, and delete blog posts
-- [ ] Tagging system for posts
-- [ ] User profiles with avatar selection
+- [x] User registration & authentication
+- [x] Session-based login/logout
+- [x] Create, edit, and delete blog posts
+- [x] Tagging system for posts
+- [x] User profiles with avatar selection
 
 ## Project Conventions
 
