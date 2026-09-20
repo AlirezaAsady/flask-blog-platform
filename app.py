@@ -11,6 +11,11 @@ from models import (
     create_profile__db,
     get_profile__db,
     update_profile__db,
+    create_post__db,
+    get_posts_by_user__db,
+    delete_post__db,
+    update_post__db,
+    get_all_posts__db,
 )
 from dotenv import load_dotenv
 from log_setup import get_logger
@@ -268,7 +273,116 @@ def delete_account():
         return redirect(url_for("profile_manage"))
 
 
-# -------------------------------------------------------
+# ------------------------------------------------------
+
+
+# ---------------- posts: owner_actions ----------------
+@app.route("/users/posts/new", methods=["GET", "POST"])
+@login_required
+def posts_create():
+    user_id = session["user_id"]
+    if request.method == "POST":
+        title = request.form.get("title")
+        content = request.form.get("content")
+        # tags_raw = request.form.get("tags", "")
+        success, message, result = create_post__db(user_id, title, content)
+        if success:
+            # TODO: tags
+            # tags = parse_tag_input(tags_raw)
+            # for tag_name in tags:
+            #     add_tag_to_post__db(result.post_id, tag_name)
+
+            flash(message, "success")
+            flash(
+                f"title: {result.title}\ncontent: {result.content}\ncreated_at:{result.created_at}",
+                "post",
+            )
+            return redirect(url_for("posts_create"))
+        else:
+            flash(f"{message} : خطا در بارگذاری اطلاعات", "error")
+            return redirect(url_for("posts_create"))
+
+    return render_template("posts_create.html")
+
+
+# ---------------- posts: owner_list_and_update --------
+@app.route("/users/posts/show", methods=["GET", "POST"])
+@login_required
+def posts_list_owned_update():
+    user_id = session["user_id"]
+    if request.method == "POST":
+        post_id = request.form.get("post_id")
+        try:
+            post_id = int(post_id)
+        except (ValueError, TypeError):
+            flash("شناسه‌ی نامعتبر است", "error")
+            return redirect(url_for("posts_list_owned_update"))
+
+        title = request.form.get("title")
+        content = request.form.get("content")
+
+        success, message = update_post__db(post_id, user_id, title, content)
+        if success:
+            flash(message, "success")
+            return redirect(url_for("posts_list_owned_update"))
+        else:
+            flash(f"{message} : خطا در بارگذاری اطلاعات", "error")
+            return redirect(url_for("posts_list_owned_update"))
+
+    success, message, result = get_posts_by_user__db(user_id)
+    title_filter = request.args.get("title", "")
+    if result:
+        result = [p for p in result if title_filter.lower() in p.title.lower()]
+    return render_template(
+        "posts_list_owned_update.html", posts=result, title_filter=title_filter
+    )
+
+
+# ---------------- posts: owner_delete -----------------
+@app.route("/users/posts/delete", methods=["POST"])
+@login_required
+def posts_delete():
+    user_id = session["user_id"]
+    post_id = request.form.get("post_id")
+
+    try:
+        post_id = int(post_id)
+    except (ValueError, TypeError):
+        flash("شناسه‌ی نامعتبر است", "error")
+        return redirect(url_for("posts_list_owned_update"))
+
+    success, message = delete_post__db(post_id, user_id)
+
+    if success:
+        flash(message, "success")
+    else:
+        flash(message, "error")
+    return redirect(url_for("posts_list_owned_update"))
+
+
+# ---------------- posts: public_list ------------------
+@app.route("/users/posts/showall")
+def posts_list_all():
+
+    title_filter = request.args.get("title", "")
+    user_filter = request.args.get("user", "")
+    success, message, result = get_all_posts__db(
+        title_filter=title_filter, user_filter=user_filter
+    )
+
+    if not success:
+        flash(message, "error")
+        result = []
+
+    return render_template(
+        "posts_list_all.html",
+        posts=result,
+        title_filter=title_filter,
+        user_filter=user_filter,
+    )
+
+
+# ------------------------------------------------------
 
 
 # ---------------*** Error Handler ***------------------

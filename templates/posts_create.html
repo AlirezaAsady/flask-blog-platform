@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block content %}
+
+<form method="POST" action="{{ url_for('posts_create') }}">
+  <table>
+    <thead>
+      <tr>
+        <th>title</th>
+        <th>content</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" name="title" /></td>
+        <td><input type="text" name="content" /></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button type="submit">ثبت</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% block content %}
+<h1>پست های کاربران</h1>
+
+<form method="GET" action="{{ url_for('posts_list_all') }}">
+  <input
+    type="text"
+    name="title"
+    placeholder="فیلتر با عنوان..."
+    value="{{ title_filter }}"
+  />
+  <input
+    type="text"
+    name="user"
+    placeholder="فیلتر با نام کاربر..."
+    value="{{ user_filter }}"
+  />
+  <button type="submit">فیلتر</button>
+</form>
+
+{% if posts %}
+<table>
+  <thead>
+    <tr>
+      <th>آواتار</th>
+      <th>کاربر</th>
+      <th>عنوان</th>
+      <th>محتوا</th>
+      <th>تگ ها</th>
+      <th>ایجاد</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for post in posts %}
+    <tr>
+      <td>
+        {% set avatar = post.a_user.a_profile.avatar_url if
+        post.a_user.a_profile and post.a_user.a_profile.avatar_url else
+        "avatars/default.jpg" %}
+        <img
+          src="{{ url_for('static', filename=avatar) }}"
+          class="profile-avatar-small"
+          alt="آواتار"
+        />
+      </td>
+      <td>{{ post.a_user.username }}</td>
+      <td>{{ post.title }}</td>
+      <td>{{ post.content }}</td>
+      <td></td>
+      <td>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>پستی پیدا نشد</p>
+{% endif %} {% endblock %}

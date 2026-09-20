@@ -1,0 +1,51 @@
+{% extends "base.html" %} {% block content %}
+<h1>لیست کاربران</h1>
+
+<form method="GET" action="{{ url_for('posts_list_owned_update') }}">
+  <input type="text" name="title" placeholder="فیلتر با عنوان..." value="{{ title_filter }}"/>
+  <button type="submit">فیلتر</button>
+</form>
+
+{% if posts %}
+<table>
+  <thead>
+    <tr>
+      <th>شناسه</th>
+      <th>عنوان</th>
+      <th>محتوا</th>
+      <th>ایجاد</th>
+      <th>عملیات</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for post in posts %}
+    <tr>
+      <td>{{ post.post_id }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('posts_list_owned_update') }}">
+          <input type="hidden" name="post_id" value="{{ post.post_id }}" />
+          <input type="text" name="title" value="{{ post.title }}" />
+      </td>
+      <td>
+          <input type="text" name="content" value="{{ post.content }}" />
+      </td>
+      <td>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td>
+          <button type="submit">ویرایش</button>
+        </form>
+      </td>
+      <td>
+        <form method="POST" action="{{ url_for('posts_delete') }}">
+          <input type="hidden" name="post_id" value="{{ post.post_id }}" />
+          <button type="submit">حذف</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>پستی پیدا نشد</p>
+{% endif %}
+
+{% endblock %}

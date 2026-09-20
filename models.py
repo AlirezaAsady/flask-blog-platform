@@ -11,6 +11,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 from log_setup import get_logger
 
 logger = get_logger("models")
@@ -45,6 +46,9 @@ class User(Base):
     a_profile = relationship(
         "Profile", back_populates="a_user", uselist=False, cascade="all, delete-orphan"
     )
+    a_posts = relationship(
+        "Post", back_populates="a_user", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<user id= {self.id}: username= {self.username} firstname= {self.firstname} lastname= {self.lastname} age= {self.age}>"
@@ -61,6 +65,30 @@ class Profile(Base):
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
 
     a_user = relationship("User", back_populates="a_profile")
+
+
+# ---------------# models: post_tags #-----------------
+# TODO: Table for tag and post
+
+# ---------------- models: tag ------------------------
+# TODO: create tag
+
+
+# ---------------- models: post -----------------------
+class Post(Base):
+    __tablename__ = "posts"
+
+    post_id = Column(Integer, primary_key=True)
+    title = Column(String(200), nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.now)
+
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    a_user = relationship("User", back_populates="a_posts")
+
+    def __repr__(self):
+        return f"<post id= {self.post_id}: title= {self.title} content= {self.content} created_at= {self.created_at}>"
 
 
 # ----------------------------------------------------
@@ -228,6 +256,98 @@ def update_profile__db(uid, bio=None, avatar_url=None):
         session.rollback()
         print(f"Error: {e}")
         return False, "Something went wrong, please try again"
+
+
+# -----------------------------------------------------
+
+
+# -------------------* POSTS *-------------------------
+# ---------------- posts: create ---------------------
+def create_post__db(uid, title, content):
+    try:
+        new_post = Post(
+            user_id=uid,
+            title=title,
+            content=content,
+        )
+        session.add(new_post)
+        session.commit()
+        return True, "create post successful", new_post
+    except Exception as e:
+        session.rollback()
+        print(f"Error creating post: {e}")
+        return False, "Something went wrong, please try again", None
+
+
+# ---------------- posts: list_by_user ----------------
+def get_posts_by_user__db(uid):
+    try:
+        posts = session.query(Post).filter(Post.user_id == uid).all()
+        return True, "Load_post successful", posts
+    except Exception as e:
+        session.rollback()
+        print(f"Error: {e}")
+        return False, "Something went wrong, please try again", None
+
+
+# ---------------- posts: delete ----------------------
+def delete_post__db(pid, uid):
+    try:
+        post = (
+            session.query(Post).filter(Post.post_id == pid, Post.user_id == uid).first()
+        )
+        if not post:
+            return False, "پست یافت نشد یا متعلق به شما نیست"
+        session.delete(post)
+        session.commit()
+        return True, "delete post successful"
+    except Exception as e:
+        session.rollback()
+        print(f"Error: {e}")
+        return False, "Something went wrong, please try again"
+
+
+# ---------------- posts: update ----------------------
+def update_post__db(pid, uid, title, content):
+    try:
+        post = (
+            session.query(Post).filter(Post.post_id == pid, Post.user_id == uid).first()
+        )
+        if not post:
+            return False, "پست یافت نشد یا متعلق به شما نیست"
+        post.title = title
+        post.content = content
+        session.commit()
+        return True, "update post successful"
+    except Exception as e:
+        session.rollback()
+        print(f"Error: {e}")
+        return False, "Something went wrong, please try again"
+
+
+# ---------------- posts: list_all --------------------
+def get_all_posts__db(title_filter=None, user_filter=None):
+    try:
+        query = session.query(Post)
+
+        if user_filter:
+            query = query.join(User)
+
+        conditions = []
+        if title_filter:
+            conditions.append(Post.title.ilike(f"%{title_filter}%"))
+        if user_filter:
+            conditions.append(User.username.ilike(f"%{user_filter}%"))
+
+        if conditions:
+            query = query.filter(*conditions)
+
+        posts = query.order_by(Post.created_at.desc()).all()
+        return True, "All posts loaded successfully", posts
+    except Exception as e:
+        session.rollback()
+        print(f"Error: {e}")
+        return False, "Something went wrong, please try again", None
 
 
 # -----------------------------------------------------
