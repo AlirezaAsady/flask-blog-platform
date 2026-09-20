@@ -44,6 +44,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if "user_id" not in session:
+            logger.warning("Unauthorized access to endpoint=%s", request.endpoint)
             flash("ابتدا وارد شوید", "warning")
             return redirect(url_for("auth_login"))
         return f(*args, **kwargs)
@@ -69,9 +70,8 @@ def home():
 @app.route("/users")
 def users_list():
     success, message, all_users = get_all_users__db()
-    # print(success, message)
+    logger.info("Listed users (success=%s)", success)
     flash(message, "success" if success else "error")
-    # logger.info(f"info in users_list(message={message}")
     return render_template("users.html", users=all_users)
 
 
@@ -101,6 +101,10 @@ def auth_register():
                 return render_template("register.html")
 
         success, message = create_user__db(username, password, firstname, lastname, age)
+        if success:
+            logger.info("User registered (username=%s)", username)
+        else:
+            logger.warning("User registration failed (username=%s)", username)
         flash(message, "success" if success else "error")
         if success:
             return redirect(url_for("users_list"))
@@ -125,10 +129,12 @@ def auth_login():
 
         if success:
             session["user_id"] = user_id
+            logger.info("User logged in (user_id=%s)", user_id)
             flash(message, "success")
 
             return redirect(url_for("edit_account"))
         else:
+            logger.warning("Login failed (username=%s)", username)
             flash(message, "error")
             return render_template("userslogin.html")
 
@@ -138,7 +144,8 @@ def auth_login():
 # ---------------- auth: logout -----------------------
 @app.route("/users/logout", methods=["POST"])
 def auth_logout():
-    session.pop("user_id", None)
+    user_id = session.pop("user_id", None)
+    logger.info("User logged out (user_id=%s)", user_id)
     flash("exit!", "success")
     return redirect(url_for("users_list"))
 
@@ -172,9 +179,11 @@ def edit_account():
             user_id, username, password, firstname, lastname, age
         )
         if success:
+            logger.info("Account updated (user_id=%s)", user_id)
             flash(message, "success")
             return redirect(url_for("edit_account"))
         else:
+            logger.warning("Account update failed (user_id=%s)", user_id)
             flash(f"{message} : خطا در بارگذاری اطلاعات", "error")
             return redirect(url_for("edit_account"))
 
@@ -184,6 +193,7 @@ def edit_account():
         # flash(message, "success")
         return render_template("edit_account.html", user_data=result)
     else:
+        logger.error("Failed to load account (user_id=%s)", user_id)
         flash(message, "error")
         return render_template("edit_account.html", user_data=None)
 
@@ -214,10 +224,19 @@ def profile_manage():
             )
 
         flash(message, "success" if success else "error")
+        if success:
+            logger.info(
+                "Profile %s (user_id=%s)",
+                "updated" if existing_profile else "created",
+                user_id,
+            )
+        else:
+            logger.warning("Profile operation failed (user_id=%s)", user_id)
         return redirect(url_for("profile_manage"))
 
     success, message, result = get_profile__db(user_id)
     if not success:
+        logger.error("Failed to load profile (user_id=%s)", user_id)
         flash(message, "error")
 
     return render_template("profile.html", profile=result)
@@ -241,6 +260,7 @@ def choose_avatar():
         valid_avatars = get_avatar_list()
 
         if avatar_filename not in valid_avatars:
+            logger.warning("Invalid avatar selection (filename=%s)", avatar_filename)
             flash("آواتار انتخابی معتبر نیست", "error")
             return redirect(url_for("choose_avatar"))
 
@@ -261,6 +281,14 @@ def choose_avatar():
             )
 
         flash(message, "success" if success else "error")
+        if success:
+            logger.info(
+                "Avatar updated (user_id=%s, filename=%s)",
+                session["user_id"],
+                avatar_filename,
+            )
+        else:
+            logger.warning("Avatar update failed (user_id=%s)", session["user_id"])
         return redirect(url_for("profile_manage"))
 
     avatars = get_avatar_list()
@@ -274,10 +302,12 @@ def delete_account():
     success, message = delete_user__db(session["user_id"])
 
     if success:
+        logger.info("Account deleted (user_id=%s)", session["user_id"])
         session.clear()
         flash(message, "success")
         return redirect(url_for("auth_login"))
     else:
+        logger.warning("Account deletion failed (user_id=%s)", session["user_id"])
         flash(message, "error")
         return redirect(url_for("profile_manage"))
 
@@ -300,6 +330,9 @@ def posts_create():
             for tag_name in tags:
                 add_tag_to_post__db(result.post_id, tag_name)
 
+            logger.info(
+                "Post created (post_id=%s, user_id=%s)", result.post_id, user_id
+            )
             flash(message, "success")
             flash(
                 f"title: {result.title}\ncontent: {result.content}\ncreated_at:{result.created_at}",
@@ -307,6 +340,7 @@ def posts_create():
             )
             return redirect(url_for("posts_create"))
         else:
+            logger.warning("Post creation failed (user_id=%s)", user_id)
             flash(f"{message} : خطا در بارگذاری اطلاعات", "error")
             return redirect(url_for("posts_create"))
 
@@ -331,9 +365,13 @@ def posts_list_owned_update():
 
         success, message = update_post__db(post_id, user_id, title, content)
         if success:
+            logger.info("Post updated (post_id=%s, user_id=%s)", post_id, user_id)
             flash(message, "success")
             return redirect(url_for("posts_list_owned_update"))
         else:
+            logger.warning(
+                "Post update failed (post_id=%s, user_id=%s)", post_id, user_id
+            )
             flash(f"{message} : خطا در بارگذاری اطلاعات", "error")
             return redirect(url_for("posts_list_owned_update"))
 
@@ -362,8 +400,12 @@ def posts_delete():
     success, message = delete_post__db(post_id, user_id)
 
     if success:
+        logger.info("Post deleted (post_id=%s, user_id=%s)", post_id, user_id)
         flash(message, "success")
     else:
+        logger.warning(
+            "Post deletion failed (post_id=%s, user_id=%s)", post_id, user_id
+        )
         flash(message, "error")
     return redirect(url_for("posts_list_owned_update"))
 
@@ -379,6 +421,7 @@ def posts_list_all():
     )
 
     if not success:
+        logger.error("Failed to load public posts")
         flash(message, "error")
         result = []
 
@@ -400,6 +443,7 @@ def posts_by_tag(tag_name):
     success, message, posts = get_posts_by_tag__db(tag_name)
 
     if not success:
+        logger.error("Failed to load posts by tag (tag=%s)", tag_name)
         flash(message, "error")
         posts = []
 
@@ -410,6 +454,7 @@ def posts_by_tag(tag_name):
 # --------------- app: error_handling -----------------
 @app.errorhandler(404)
 def errors_page_not_found(e):
+    logger.warning("Page not found (path=%s)", request.path)
     return "این صفحه پیدا نشد. به آدرس‌ /home سر بزنید.", 404
 
 

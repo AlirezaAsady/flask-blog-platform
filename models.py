@@ -134,9 +134,11 @@ def create_user__db(username, password, firstname=None, lastname=None, age=None)
         return True, "Registration successful"
     except IntegrityError:
         session.rollback()
+        logger.warning("Username already exists (username=%s)", username)
         return False, "This username is already taken"
     except Exception as e:
         session.rollback()
+        logger.exception("Error creating user (username=%s)", username)
         return False, "Something went wrong, please try again"
 
 
@@ -146,6 +148,7 @@ def get_all_users__db():
     try:
         result = session.execute(stmt).all()
     except Exception as e:
+        logger.exception("Error loading users")
         return False, f"Failed to fetch users: {e}", None
     else:
         return True, "users loaded successfully", result
@@ -163,7 +166,7 @@ def delete_user__db(uid):
         return True, "User deleted successfully"
     except Exception as e:
         session.rollback()
-        print(f"Error: {e}")
+        logger.exception("Error deleting user (user_id=%s)", uid)
         return False, "Something went wrong, please try again"
 
 
@@ -209,9 +212,11 @@ def update_user__db(uid, username, password, firstname=None, lastname=None, age=
         return True, "update successful", result
     except IntegrityError:
         session.rollback()
+        logger.warning("Username already exists during update (user_id=%s)", uid)
         return False, "This username is already taken", None
     except Exception as e:
         session.rollback()
+        logger.exception("Error updating user (user_id=%s)", uid)
         return False, "Something went wrong, please try again", None
 
 
@@ -228,11 +233,11 @@ def create_profile__db(uid, bio=None, avatar_url=None):
         return True, "Create profile successful"
     except IntegrityError as e:
         session.rollback()
-        print(f"Error: {e}")
+        logger.warning("Profile already exists (user_id=%s)", uid)
         return False, "شما از قبل پروفایل دارید"
     except Exception as e:
         session.rollback()
-        print(f"Error: {e}")
+        logger.exception("Error creating profile (user_id=%s)", uid)
         return False, "Something went wrong, please try again"
 
 
@@ -245,7 +250,7 @@ def get_profile__db(uid):
         return True, "load_profile successful", profile
     except Exception as e:
         session.rollback()
-        print(f"Error: {e}")
+        logger.exception("Error loading profile (user_id=%s)", uid)
         return False, "Something went wrong, please try again", None
 
 
@@ -268,7 +273,7 @@ def update_profile__db(uid, bio=None, avatar_url=None):
         return False, "update_profile Not successful"
     except Exception as e:
         session.rollback()
-        print(f"Error: {e}")
+        logger.exception("Error updating profile (user_id=%s)", uid)
         return False, "Something went wrong, please try again"
 
 
@@ -289,7 +294,7 @@ def create_post__db(uid, title, content):
         return True, "create post successful", new_post
     except Exception as e:
         session.rollback()
-        print(f"Error creating post: {e}")
+        logger.exception("Error creating post (user_id=%s)", uid)
         return False, "Something went wrong, please try again", None
 
 
@@ -300,7 +305,7 @@ def get_posts_by_user__db(uid):
         return True, "Load_post successful", posts
     except Exception as e:
         session.rollback()
-        print(f"Error: {e}")
+        logger.exception("Error loading posts for user (user_id=%s)", uid)
         return False, "Something went wrong, please try again", None
 
 
@@ -317,7 +322,7 @@ def delete_post__db(pid, uid):
         return True, "delete post successful"
     except Exception as e:
         session.rollback()
-        print(f"Error: {e}")
+        logger.exception("Error deleting post (post_id=%s, user_id=%s)", pid, uid)
         return False, "Something went wrong, please try again"
 
 
@@ -335,7 +340,7 @@ def update_post__db(pid, uid, title, content):
         return True, "update post successful"
     except Exception as e:
         session.rollback()
-        print(f"Error: {e}")
+        logger.exception("Error updating post (post_id=%s, user_id=%s)", pid, uid)
         return False, "Something went wrong, please try again"
 
 
@@ -360,7 +365,11 @@ def get_all_posts__db(title_filter=None, user_filter=None):
         return True, "All posts loaded successfully", posts
     except Exception as e:
         session.rollback()
-        print(f"Error: {e}")
+        logger.exception(
+            "Error loading all posts (title_filter=%s, user_filter=%s)",
+            title_filter,
+            user_filter,
+        )
         return False, "Something went wrong, please try again", None
 
 
