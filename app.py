@@ -31,7 +31,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 
 
-# ----------------** log **-----------------
+# ----------------** LOG **---------------------------
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     logger = get_logger("app")
 else:
@@ -40,7 +40,8 @@ else:
     logger.propagate = False
 
 
-# ---------------- auth: access_control ----------------
+# ---------------** DECORATOR **----------------------
+# --------------- auth: req_login --------------------
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -53,13 +54,16 @@ def login_required(f):
     return decorated_function
 
 
-# ---------------- tag --------------------------------
+# TODO: admin_required
+
+
+# ---------------- tag -------------------------------
 def parse_tag_input(raw_input):
     tags = re.split(r"[,\s]+", raw_input.strip())
     return [tag for tag in tags if tag]
 
 
-# -------------------* HOME *--------------------------
+# ----------------* HOME *----------------------------
 @app.route("/home")
 @app.route("/")
 def home():
@@ -115,7 +119,7 @@ def auth_register():
     return render_template("register.html")
 
 
-# ---------------- auth: database_login ----------------
+# -------------- auth: database_login -----------
 @app.route("/users/login", methods=["GET", "POST"])
 def auth_login():
     if request.method == "POST":
@@ -142,7 +146,7 @@ def auth_login():
     return render_template("userslogin.html")
 
 
-# ---------------- auth: logout -----------------------
+# -------------- auth: logout -------------------
 @app.route("/users/logout", methods=["POST"])
 def auth_logout():
     user_id = session.pop("user_id", None)
@@ -243,7 +247,7 @@ def profile_manage():
     return render_template("profile.html", profile=result)
 
 
-# -------------------# avatar #------------------------
+# ----------------# avatar #---------------------
 def get_avatar_list():
     avatar_folder = os.path.join(app.static_folder, "avatars")
     files = os.listdir(avatar_folder)
@@ -252,7 +256,7 @@ def get_avatar_list():
     return images
 
 
-# ---------------- profile: avatar ----------------
+# -------------- profile: avatar ----------------
 @app.route("/users/profile/avatars", methods=["GET", "POST"])
 @login_required
 def choose_avatar():
@@ -296,7 +300,7 @@ def choose_avatar():
     return render_template("choose_avatar.html", avatars=avatars)
 
 
-# ---------------- profile: delete_account ----------------------
+# ------------- profile: delete_account ---------
 @app.route("/users/profile/delete", methods=["POST"])
 @login_required
 def delete_account():
@@ -313,10 +317,10 @@ def delete_account():
         return redirect(url_for("profile_manage"))
 
 
-# ------------------------------------------------------
+# ----------------------------------------------------
 
 
-# ---------------- posts: owner_actions ----------------
+# -------------- posts: owner_actions ----------------
 @app.route("/users/posts/new", methods=["GET", "POST"])
 @login_required
 def posts_create():
@@ -348,7 +352,7 @@ def posts_create():
     return render_template("posts_create.html")
 
 
-# ---------------- posts: owner_list_and_update --------
+# -------------- posts: owner_list_and_update --------
 @app.route("/users/posts/show", methods=["GET", "POST"])
 @login_required
 def posts_list_owned_update():
@@ -385,7 +389,7 @@ def posts_list_owned_update():
     )
 
 
-# ---------------- posts: owner_delete -----------------
+# --------------- posts: owner_delete -----------------
 @app.route("/users/posts/delete", methods=["POST"])
 @login_required
 def posts_delete():
@@ -411,7 +415,7 @@ def posts_delete():
     return redirect(url_for("posts_list_owned_update"))
 
 
-# ---------------- posts: public_list ------------------
+# --------------- posts: public_list -----------------
 @app.route("/users/posts/showall")
 def posts_list_all():
 
@@ -434,11 +438,11 @@ def posts_list_all():
     )
 
 
-# ------------------------------------------------------
+# ----------------------------------------------------
 
 
-# ----------------* tag *--------------------------------
-# ---------------- tag: posts_by_tag --------------------
+# ----------------* TAG *-----------------------------
+# ---------------- tag: posts_by_tag -----------------
 @app.route("/users/posts/tag/<tag_name>")
 def posts_by_tag(tag_name):
     success, message, posts = get_posts_by_tag__db(tag_name)
@@ -451,7 +455,7 @@ def posts_by_tag(tag_name):
     return render_template("posts_by_tag.html", posts=posts, tag_name=tag_name)
 
 
-# ---------------- tag: add --------------------
+# ---------------- tag: add --------------------------
 @app.route("/users/posts/tag/add", methods=["POST"])
 @login_required
 def posts_add_tag():
@@ -486,7 +490,7 @@ def posts_add_tag():
     return redirect(url_for("posts_list_owned_update"))
 
 
-# ---------------- tag: remove --------------------
+# ---------------- tag: remove -----------------------
 @app.route("/users/posts/tag/remove", methods=["POST"])
 @login_required
 def posts_remove_tag():
@@ -521,8 +525,8 @@ def posts_remove_tag():
     return redirect(url_for("posts_list_owned_update"))
 
 
-# ---------------*** Error Handler ***------------------
-# --------------- app: error_handling -----------------
+# ---------------*** ERROR HANDLER ***----------------
+# --------------- app: error_handling ----------------
 @app.errorhandler(404)
 def errors_page_not_found(e):
     logger.warning("Page not found (path=%s)", request.path)
