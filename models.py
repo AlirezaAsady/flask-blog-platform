@@ -403,7 +403,7 @@ def get_or_create_tag__db(tag_name):
 
     except Exception as e:
         session.rollback()
-        logger.error(f"Error in get_or_create_tag__db(tag_name={tag_name}): {e}")
+        logger.error("Error in get_or_create_tag__db(tag_name=%s): %s", tag_name, e)
         return None
 
 
@@ -431,7 +431,11 @@ def add_tag_to_post__db(post_id, tag_name, user_id):
     except Exception as e:
         session.rollback()
         logger.error(
-            f"Error in add_tag_to_post__db(post_id={post_id}, tag_name={tag_name}, user_id={user_id}): {e}"
+            "Error in add_tag_to_post__db(post_id=%s, tag_name=%s, user_id=%s): %s",
+            post_id,
+            tag_name,
+            user_id,
+            e,
         )
         return False, "Something went wrong, please try again"
 
@@ -460,7 +464,11 @@ def remove_tag_from_post__db(post_id, tag_name, user_id):
     except Exception as e:
         session.rollback()
         logger.error(
-            f"Error in remove_tag_from_post__db(post_id={post_id}, tag_name={tag_name}, user_id={user_id}): {e}"
+            "Error in remove_tag_from_post__db(post_id=%s, tag_name=%s, user_id=%s): %s",
+            post_id,
+            tag_name,
+            user_id,
+            e,
         )
         return False, "Something went wrong, please try again"
 
@@ -475,7 +483,7 @@ def get_posts_by_tag__db(tag_name):
 
     except Exception as e:
         session.rollback()
-        logger.error(f"Error in get_posts_by_tag__db(tag_name={tag_name}): {e}")
+        logger.error("Error in get_posts_by_tag__db(tag_name=%s): %s", tag_name, e)
         return False, "Something went wrong, please try again", None
 
 
