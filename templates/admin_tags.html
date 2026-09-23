@@ -1,0 +1,35 @@
+{% extends "base.html" %} {% block content %}
+<h1>مدیریت تگ‌ها (ادمین)</h1>
+
+<form method="POST" action="{{ url_for('admin_remove_tag') }}">
+  <input type="text" name="tag_name" placeholder="نام تگ برای حذف..." />
+  <button type="submit">حذف تگ</button>
+</form>
+
+{% if tags %}
+<table>
+  <thead>
+    <tr>
+      <th>شناسه</th>
+      <th>نام</th>
+      <th>حذف</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for tag in tags %}
+    <tr>
+      <td>{{ tag.id }}</td>
+      <td>{{ tag.name }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('admin_remove_tag') }}">
+          <input type="hidden" name="tag_name" value="{{ tag.name }}" />
+          <button type="submit">حذف کامل</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>هیچ تگی وجود نداره</p>
+{% endif %} {% endblock %}

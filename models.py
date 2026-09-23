@@ -8,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Table,
+    Boolean,
 )
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy.exc import IntegrityError
@@ -17,7 +18,7 @@ from log_setup import get_logger
 
 logger = get_logger("models")
 
-# ----------------*** Database Setup ***--------------
+# ----------------*** Database Setup ***---------------
 # ---------------- app: database_connection -----------
 # اتصال به یک فایل SQLite (اگر فایل وجود نداشته باشه، ساخته می‌شه)
 engine = create_engine(
@@ -31,7 +32,7 @@ engine = create_engine(
 Base = declarative_base()
 
 
-# -------------------* MODELS *------------------------
+# ----------------** MODELS **-------------------------
 # ---------------- models: user -----------------------
 class User(Base):
     __tablename__ = "users"
@@ -43,6 +44,8 @@ class User(Base):
     firstname = Column(String(30), nullable=True)
     lastname = Column(String(50), nullable=True)
     age = Column(Integer, nullable=True)
+
+    is_admin = Column(Boolean, default=False, nullable=False)
 
     a_profile = relationship(
         "Profile", back_populates="a_user", uselist=False, cascade="all, delete-orphan"
@@ -474,3 +477,29 @@ def get_posts_by_tag__db(tag_name):
         session.rollback()
         logger.error(f"Error in get_posts_by_tag__db(tag_name={tag_name}): {e}")
         return False, "Something went wrong, please try again", None
+
+
+def get_all_tags__db():
+    try:
+        tags = session.query(Tag).order_by(Tag.name).all()
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Error in get_all_tags__db(): {e}")
+        return False, "Something went wrong, please try again", None
+    else:
+        return True, "Tags loaded successfully", tags
+
+
+def delete_tag__db(tag_name):
+    try:
+        tag = session.query(Tag).filter(Tag.name == tag_name).one_or_none()
+        if not tag:
+            return False, "تگی با این نام پیدا نشد"
+        session.delete(tag)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        logger.error("Error in delete_tag__db(tag_name=%s): %s", tag_name, e)
+        return False, "Something went wrong, please try again"
+    else:
+        return True, "تگ با موفقیت حذف شد"

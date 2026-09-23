@@ -20,6 +20,8 @@ from models import (
     add_tag_to_post__db,
     remove_tag_from_post__db,
     get_posts_by_tag__db,
+    get_all_tags__db,
+    delete_tag__db,
 )
 from dotenv import load_dotenv
 from log_setup import get_logger
@@ -54,7 +56,26 @@ def login_required(f):
     return decorated_function
 
 
-# TODO: admin_required
+# --------------- auth: req_admin --------------------
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user_id" not in session:
+            flash("ابتدا وارد شوید", "warning")
+            return redirect(url_for("auth_login"))
+
+        success, message, user = get_user_by_id__db(session["user_id"])
+        if not success or not user.is_admin:
+            logger.warning(
+                "Unauthorized admin access attempt (user_id=%s, endpoint=%s)",
+                session["user_id"],
+                request.endpoint,
+            )
+            flash("شما به این بخش دسترسی ندارید", "error")
+            return redirect(url_for("home"))
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 # ---------------- tag -------------------------------
@@ -523,6 +544,40 @@ def posts_remove_tag():
         )
         flash(message, "error")
     return redirect(url_for("posts_list_owned_update"))
+
+
+# ----------------* admin *------------------------------
+# ---------------- admin: tags list --------------------
+@app.route("/admin/tags")
+@admin_required
+def admin_tags():
+    success, message, tags = get_all_tags__db()
+    if not success:
+        flash(message, "error")
+        tags = []
+    return render_template("admin_tags.html", tags=tags)
+
+
+# ---------------- admin: tags remove --------------------
+@app.route("/admin/tags/remove", methods=["POST"])
+@admin_required
+def admin_remove_tag():
+    user_id = session["user_id"]
+    tag_name = request.form.get("tag_name")
+
+    success, message = delete_tag__db(tag_name)
+
+    if success:
+        logger.info(
+            "Tag deleted by admin (tag_name=%s, admin_id=%s)", tag_name, user_id
+        )
+        flash(message, "success")
+    else:
+        logger.warning(
+            "Tag deletion failed (tag_name=%s, admin_id=%s)", tag_name, user_id
+        )
+        flash(message, "error")
+    return redirect(url_for("admin_tags"))
 
 
 # ---------------*** ERROR HANDLER ***----------------
