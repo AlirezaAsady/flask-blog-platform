@@ -180,4 +180,18 @@ refactor(db): migrate from global session to scoped session
 ```
 
 </div>
+
+## ۱۰. فرمت لاگ‌ها (Lazy %s، نه f-string)
+
+- تمام فراخوانی‌های `logger.*` (`info`, `warning`, `error`, `debug`) باید با فرمت
+  lazy یعنی `%s` و آرگومان‌های جدا نوشته بشن، نه f-string:
+
+  logger.info("User promoted (id=%s, username=%s)", user.id, user.username)
+
+- استفاده از f-string، `.format()`، یا عملگر `%` برای ساختن رشته قبل از پاس دادن
+  به logger ممنوعه — چون این کار ماهیت lazy رو از بین می‌بره (رشته حتی وقتی سطح
+  لاگ اجازه‌ی نمایش پیام رو نمی‌ده هم ساخته می‌شه).
+- این قانون فقط مخصوص لاگ‌هاست؛ سایر رشته‌های مقداردار (مثل خروجی `print()` که
+  مستقیم به کاربر نشون داده می‌شه) همچنان f-string می‌مونن.
+
 </div>
