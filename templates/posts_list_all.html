@@ -35,7 +35,7 @@
       <td>
         {% set avatar = post.a_user.a_profile.avatar_url if
         post.a_user.a_profile and post.a_user.a_profile.avatar_url else
-        "avatars/default.jpg" %}
+        "avatars/default.webp" %}
         <img
           src="{{ url_for('static', filename=avatar) }}"
           class="profile-avatar-small"
