@@ -61,6 +61,32 @@ This project is being built incrementally; items are checked off as they're impl
 - [x] Admin panel for tag management
 - [x] User promotion to admin
 
+## Screenshots
+
+### Post List
+
+![List of blog posts](docs/screenshots/list-posts.webp)
+
+### Post Detail with Tags
+
+![Single post page with tags](docs/screenshots/post-detail.webp)
+
+### Login
+
+![Login page](docs/screenshots/login.webp)
+
+### Profile
+
+![User profile page](docs/screenshots/profile.webp)
+
+### Avatar Selection
+
+![Avatar selection UI](docs/screenshots/profile-avatar.webp)
+
+### Admin Tag Management
+
+![Admin panel for managing tags](docs/screenshots/admin-tags.webp)
+
 ## Project Conventions
 
 This project follows a documented set of internal conventions for database function signatures, error handling, access control, and naming. See [CONVENTIONS.md](./CONVENTIONS.md) for details.
