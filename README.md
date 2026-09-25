@@ -2,6 +2,11 @@
 
 A small blog platform built with Flask, developed step by step to demonstrate solid backend fundamentals: authentication, relational data modeling, CRUD operations, and consistent code conventions across the codebase.
 
+## Prerequisites
+
+- Python 3.14.5
+- No external database server required — the project uses SQLite by default
+
 ## Tech Stack
 
 - Python / Flask
