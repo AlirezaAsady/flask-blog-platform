@@ -7,6 +7,41 @@ A small blog platform built with Flask, developed step by step to demonstrate so
 - Python 3.14.5
 - No external database server required — the project uses SQLite by default
 
+## Installation & Setup
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/AlirezaAsady/flask-blog-platform.git
+   cd flask-blog-platform
+   ```
+
+2. Create and activate a virtual environment:
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate # on Windows: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Set up environment variables:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Then open `.env` and set `SECRET_KEY` to a random secret string.
+
+5. Run the app:
+   ```bash
+   flask run
+   ```
+
 ## Tech Stack
 
 - Python / Flask
@@ -32,4 +67,4 @@ This project follows a documented set of internal conventions for database funct
 
 ## Status
 
-🚧 In development — built and committed incrementally, with the commit history reflecting real development progress.
+✅ MVP complete — actively used as a portfolio project; the commit history reflects real, incremental development.
