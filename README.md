@@ -18,6 +18,8 @@ This project is being built incrementally; items are checked off as they're impl
 - [x] Create, edit, and delete blog posts
 - [x] Tagging system for posts
 - [x] User profiles with avatar selection
+- [x] Admin panel for tag management
+- [x] User promotion to admin
 
 ## Project Conventions
 
