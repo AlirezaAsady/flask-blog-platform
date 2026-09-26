@@ -31,7 +31,17 @@ from functools import wraps
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY")
+secret_key = os.environ.get("SECRET_KEY", "")
+if len(secret_key) < 32:
+    raise RuntimeError(
+        "SECRET_KEY must be set to a random value of at least 32 characters."
+    )
+
+app.secret_key = secret_key
+app.config["DEBUG"] = (
+    os.environ.get("FLASK_DEBUG", "").lower() in {"1", "true", "yes"}
+    and os.environ.get("APP_ENV", "development").lower() != "production"
+)
 
 
 # ----------------** LOG **---------------------------
@@ -207,6 +217,10 @@ def edit_account():
 
         if not username:
             flash("نام کاربری را وارد کنید", "warning")
+            return redirect(url_for("edit_account"))
+
+        if password and len(password) < 4:
+            flash("رمز عبور باید حداقل ۴ کاراکتر باشد", "error")
             return redirect(url_for("edit_account"))
 
         age = None
@@ -606,4 +620,4 @@ def errors_page_not_found(e):
 
 # -----------------------------------------------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=app.config["DEBUG"])

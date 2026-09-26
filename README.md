@@ -37,7 +37,18 @@ A small blog platform built with Flask, developed step by step to demonstrate so
    cp .env.example .env
    ```
 
-   Then open `.env` and set `SECRET_KEY` to a random secret string.
+   Generate a random key with `python -c "import secrets; print(secrets.token_hex(32))"`
+   and put its output in `.env` as `SECRET_KEY`. The app refuses to start if the
+   key is missing or shorter than 32 characters.
+
+   `FLASK_DEBUG=1` enables the local debugger. Keep it disabled in production and
+   set `APP_ENV=production`; the app will not enable debug mode in that environment.
+
+   Initial admin/demo accounts are optional. To seed one on a fresh database,
+   configure its matching `SEED_ADMIN_USERNAME` / `SEED_ADMIN_PASSWORD` or
+   `SEED_DEMO_USERNAME` / `SEED_DEMO_PASSWORD` values. Seed passwords must be at
+   least 12 characters. If no admin is seeded, create a user and promote it with
+   `python make_admin.py`. Never use default or shared passwords.
 
 5. Run the app:
    ```bash

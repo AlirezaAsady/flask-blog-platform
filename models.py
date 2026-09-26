@@ -520,28 +520,40 @@ def delete_tag__db(tag_name):
 def seed_demo_users__db():
     try:
         if session.query(User).count() == 0:
-            admin_username = os.environ.get("SEED_ADMIN_USERNAME", "admin")
-            admin_password = os.environ.get("SEED_ADMIN_PASSWORD", "changeme123")
-            demo_username = os.environ.get("SEED_DEMO_USERNAME", "demo")
-            demo_password = os.environ.get("SEED_DEMO_PASSWORD", "changeme123")
+            admin_username = os.environ.get("SEED_ADMIN_USERNAME")
+            admin_password = os.environ.get("SEED_ADMIN_PASSWORD")
+            demo_username = os.environ.get("SEED_DEMO_USERNAME")
+            demo_password = os.environ.get("SEED_DEMO_PASSWORD")
 
-            admin_success, admin_message = create_user__db(
-                admin_username, admin_password
-            )
-            if admin_success:
-                admin_user = (
-                    session.query(User)
-                    .filter(User.username == admin_username)
-                    .one_or_none()
+            if admin_username and admin_password and len(admin_password) >= 12:
+                admin_success, admin_message = create_user__db(
+                    admin_username, admin_password
                 )
-                admin_user.is_admin = True
-                session.commit()
+                if admin_success:
+                    admin_user = (
+                        session.query(User)
+                        .filter(User.username == admin_username)
+                        .one_or_none()
+                    )
+                    admin_user.is_admin = True
+                    session.commit()
+                else:
+                    logger.warning("Seed admin user not created: %s", admin_message)
             else:
-                logger.warning("Seed admin user not created: %s", admin_message)
+                logger.info(
+                    "Admin seed skipped (configure credentials with a password of at least 12 characters)"
+                )
 
-            demo_success, demo_message = create_user__db(demo_username, demo_password)
-            if not demo_success:
-                logger.warning("Seed demo user not created: %s", demo_message)
+            if demo_username and demo_password and len(demo_password) >= 12:
+                demo_success, demo_message = create_user__db(
+                    demo_username, demo_password
+                )
+                if not demo_success:
+                    logger.warning("Seed demo user not created: %s", demo_message)
+            elif demo_username or demo_password:
+                logger.warning(
+                    "Demo seed skipped (configure both credentials and use a password of at least 12 characters)"
+                )
     except Exception as e:
         session.rollback()
         logger.error("Error in seed script: %s", e)
