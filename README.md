@@ -2,6 +2,8 @@
 
 A small blog platform built with Flask, developed step by step to demonstrate solid backend fundamentals: authentication, relational data modeling, CRUD operations, and consistent code conventions across the codebase.
 
+🔗 **Live Demo:** [flask-blog-platform-qzah.onrender.com](https://flask-blog-platform-qzah.onrender.com/)
+
 ## Prerequisites
 
 - Python 3.14.5
