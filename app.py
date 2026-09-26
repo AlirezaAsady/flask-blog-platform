@@ -22,6 +22,7 @@ from models import (
     get_posts_by_tag__db,
     get_all_tags__db,
     delete_tag__db,
+    seed_demo_users__db,
 )
 from dotenv import load_dotenv
 from log_setup import get_logger
@@ -40,6 +41,11 @@ else:
     logger = logging.getLogger("app")
     logger.addHandler(logging.NullHandler())
     logger.propagate = False
+
+# ---------------@ app: seed demo users @-------------
+#        (Render free-tier disk resets on redeploy)
+seed_demo_users__db()
+# ----------------------------------------------------
 
 
 # ---------------** DECORATOR **----------------------
