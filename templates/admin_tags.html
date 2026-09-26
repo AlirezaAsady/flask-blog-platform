@@ -7,29 +7,36 @@
 </form>
 
 {% if tags %}
-<table>
-  <thead>
-    <tr>
-      <th>شناسه</th>
-      <th>نام</th>
-      <th>حذف</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for tag in tags %}
-    <tr>
-      <td>{{ tag.id }}</td>
-      <td>{{ tag.name }}</td>
-      <td>
-        <form method="POST" action="{{ url_for('admin_remove_tag') }}">
-          <input type="hidden" name="tag_name" value="{{ tag.name }}" />
-          <button type="submit">حذف کامل</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div
+  class="table-scroll mobile-card-table"
+  role="region"
+  aria-label="فهرست برچسب‌ها"
+  tabindex="0"
+>
+  <table>
+    <thead>
+      <tr>
+        <th>شناسه</th>
+        <th>نام</th>
+        <th>حذف</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tag in tags %}
+      <tr>
+        <td data-label="شناسه">{{ tag.id }}</td>
+        <td data-label="نام برچسب">{{ tag.name }}</td>
+        <td data-label="عملیات">
+          <form method="POST" action="{{ url_for('admin_remove_tag') }}">
+            <input type="hidden" name="tag_name" value="{{ tag.name }}" />
+            <button type="submit">حذف کامل</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% else %}
 <p>هیچ تگی وجود نداره</p>
 {% endif %} {% endblock %}

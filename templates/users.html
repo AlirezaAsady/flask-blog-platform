@@ -2,24 +2,31 @@
 <h1>لیست کاربران</h1>
 
 {% if users %}
-<table>
-  <thead>
-    <tr>
-      <th>شناسه</th>
-      <th>نام</th>
-      <th>نام_خانوادگی</th>
-      <th>سن</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for user in users %}
-    <tr>
-      <td>{{ user.id }}</td>
-      <td>{{ user.firstname }}</td>
-      <td>{{ user.lastname }}</td>
-      <td>{{ user.age }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div
+  class="table-scroll mobile-card-table"
+  role="region"
+  aria-label="فهرست کاربران"
+  tabindex="0"
+>
+  <table>
+    <thead>
+      <tr>
+        <th>شناسه</th>
+        <th>نام</th>
+        <th>نام_خانوادگی</th>
+        <th>سن</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td data-label="شناسه">{{ user.id }}</td>
+        <td data-label="نام">{{ user.firstname }}</td>
+        <td data-label="نام خانوادگی">{{ user.lastname }}</td>
+        <td data-label="سن">{{ user.age }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endif %} {% endblock %}

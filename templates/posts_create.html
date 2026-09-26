@@ -1,28 +1,36 @@
 {% extends "base.html" %} {% block content %}
 
-<form method="POST" action="{{ url_for('posts_create') }}">
-  <table>
-    <thead>
-      <tr>
-        <th>title</th>
-        <th>content</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><input type="text" name="title" /></td>
-        <td><input type="text" name="content" /></td>
-      </tr>
-    </tbody>
-  </table>
+<h1>نوشتن مطلب تازه</h1>
+<form
+  method="POST"
+  action="{{ url_for('posts_create') }}"
+  class="post-composer-form"
+>
+  <div class="post-form-field">
+    <label for="post-title">عنوان مطلب</label>
+    <input type="text" id="post-title" name="title" required />
+  </div>
 
-  <label for="tags">تگ‌ها (با کاما یا فاصله جدا کنید)</label>
-  <input
-    type="text"
-    id="tags"
-    name="tags"
-    placeholder="flask, python web-dev"
-  />
+  <div class="post-form-field">
+    <label for="post-content">متن مطلب</label>
+    <textarea
+      id="post-content"
+      name="content"
+      rows="8"
+      required
+      placeholder="متن مطلب‌تان را اینجا بنویسید..."
+    ></textarea>
+  </div>
+
+  <div class="post-form-field">
+    <label for="tags">برچسب‌ها (با کاما یا فاصله جدا کنید)</label>
+    <input
+      type="text"
+      id="tags"
+      name="tags"
+      placeholder="flask, python web-dev"
+    />
+  </div>
 
   <button type="submit">ثبت</button>
 </form>

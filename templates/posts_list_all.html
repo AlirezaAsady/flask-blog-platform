@@ -18,47 +18,56 @@
 </form>
 
 {% if posts %}
-<table>
-  <thead>
-    <tr>
-      <th>آواتار</th>
-      <th>کاربر</th>
-      <th>عنوان</th>
-      <th>محتوا</th>
-      <th>تگ ها</th>
-      <th>ایجاد</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for post in posts %}
-    <tr>
-      <td>
-        {% set avatar = post.a_user.a_profile.avatar_url if
-        post.a_user.a_profile and post.a_user.a_profile.avatar_url else
-        "avatars/default.webp" %}
-        <img
-          src="{{ url_for('static', filename=avatar) }}"
-          class="profile-avatar-small"
-          alt="آواتار"
-        />
-      </td>
-      <td>{{ post.a_user.username }}</td>
-      <td>{{ post.title }}</td>
-      <td>{{ post.content }}</td>
-      <td>
-        {% for tag in post.a_tags %}
-        <a
-          href="{{ url_for('posts_by_tag', tag_name=tag.name) }}"
-          class="tag-badge"
-          >{{ tag.name }}</a
-        >
-        {% endfor %}
-      </td>
-      <td>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div
+  class="table-scroll mobile-card-table"
+  role="region"
+  aria-label="فهرست نوشته‌ها"
+  tabindex="0"
+>
+  <table class="public-posts-table">
+    <thead>
+      <tr>
+        <th>آواتار</th>
+        <th>کاربر</th>
+        <th>عنوان</th>
+        <th>محتوا</th>
+        <th>تگ ها</th>
+        <th>ایجاد</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+      <tr>
+        <td data-label="تصویر">
+          {% set avatar = post.a_user.a_profile.avatar_url if
+          post.a_user.a_profile and post.a_user.a_profile.avatar_url else
+          "avatars/default.webp" %}
+          <img
+            src="{{ url_for('static', filename=avatar) }}"
+            class="profile-avatar-small"
+            alt="آواتار"
+          />
+        </td>
+        <td data-label="کاربر">{{ post.a_user.username }}</td>
+        <td data-label="عنوان">{{ post.title }}</td>
+        <td data-label="محتوا">{{ post.content }}</td>
+        <td data-label="برچسب‌ها">
+          {% for tag in post.a_tags %}
+          <a
+            href="{{ url_for('posts_by_tag', tag_name=tag.name) }}"
+            class="tag-badge"
+            >{{ tag.name }}</a
+          >
+          {% endfor %}
+        </td>
+        <td data-label="تاریخ ایجاد">
+          {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% else %}
 <p>پستی پیدا نشد</p>
 {% endif %} {% endblock %}

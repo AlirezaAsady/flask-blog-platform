@@ -2,34 +2,41 @@
 <h1>پست‌های با تگ: {{ tag_name }}</h1>
 
 {% if posts %}
-<table>
-  <thead>
-    <tr>
-      <th>کاربر</th>
-      <th>عنوان</th>
-      <th>محتوا</th>
-      <th>تگ‌ها</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for post in posts %}
-    <tr>
-      <td>{{ post.a_user.username }}</td>
-      <td>{{ post.title }}</td>
-      <td>{{ post.content }}</td>
-      <td>
-        {% for tag in post.a_tags %}
-        <a
-          href="{{ url_for('posts_by_tag', tag_name=tag.name) }}"
-          class="tag-badge"
-          >{{ tag.name }}</a
-        >
-        {% endfor %}
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div
+  class="table-scroll mobile-card-table"
+  role="region"
+  aria-label="نوشته‌های برچسب"
+  tabindex="0"
+>
+  <table class="tag-posts-table">
+    <thead>
+      <tr>
+        <th>کاربر</th>
+        <th>عنوان</th>
+        <th>محتوا</th>
+        <th>تگ‌ها</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+      <tr>
+        <td data-label="کاربر">{{ post.a_user.username }}</td>
+        <td data-label="عنوان">{{ post.title }}</td>
+        <td data-label="محتوا">{{ post.content }}</td>
+        <td data-label="برچسب‌ها">
+          {% for tag in post.a_tags %}
+          <a
+            href="{{ url_for('posts_by_tag', tag_name=tag.name) }}"
+            class="tag-badge"
+            >{{ tag.name }}</a
+          >
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% else %}
 <p>پستی با این تگ پیدا نشد</p>
 {% endif %}

@@ -7,6 +7,7 @@
 </form>
 
 {% if posts %}
+<div class="table-scroll owned-posts-scroll" role="region" aria-label="مدیریت نوشته‌های من" tabindex="0">
 <table class="posts-owned-table">
   <thead>
     <tr>
@@ -69,6 +70,7 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% else %}
 <p>پستی پیدا نشد</p>
 {% endif %}

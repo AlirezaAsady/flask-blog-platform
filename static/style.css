@@ -140,6 +140,40 @@ td form {
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.035);
 }
 
+.page-content > .post-composer-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.post-form-field {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+}
+
+.post-form-field label {
+  color: #334155;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.post-form-field input,
+.post-form-field textarea {
+  width: 100%;
+}
+
+.post-form-field textarea {
+  min-height: 190px;
+  resize: vertical;
+  line-height: 1.8;
+}
+
+.post-composer-form > button {
+  justify-self: start;
+  min-width: 110px;
+}
+
 .page-content input[type="text"],
 .page-content input[type="password"],
 .page-content input[type="number"],
@@ -191,6 +225,21 @@ td form {
   border-radius: 14px;
   background: #fff;
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.035);
+}
+
+.table-scroll {
+  max-width: 100%;
+  margin: 0 0 22px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: #94a3b8 #e2e8f0;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 3px;
 }
 
 .page-content th {
@@ -878,47 +927,170 @@ td form {
 
 @media (max-width: 620px) {
   .site-nav {
-    align-items: flex-start;
+    align-items: stretch;
+    padding: 8px 10px;
   }
 
   .site-nav-links {
-    gap: 5px;
+    display: grid;
+    flex: 1 1 auto;
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
   }
 
   .site-nav a,
   .site-nav-logout button {
-    min-height: 36px;
-    padding: 0 10px;
-    font-size: 0.84rem;
+    min-width: 0;
+    min-height: 42px;
+    padding: 4px 5px;
+    font-size: 0.82rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .site-nav-logout {
+    align-self: stretch;
+  }
+
+  .site-nav-logout button {
+    width: 100%;
   }
 
   .home-directory {
-    width: min(100% - 28px, 480px);
-    margin-top: 22px;
+    width: 100%;
+    margin: 10px 0 24px;
   }
 
   .page-content {
     width: calc(100% - 28px);
     padding-top: 22px;
-    overflow-x: auto;
+    overflow-x: visible;
   }
 
   .page-content > form {
     align-items: stretch;
+    gap: 10px;
     padding: 14px;
+  }
+
+  .page-content > form > .table-scroll {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .page-content > .post-composer-form {
+    gap: 14px;
+  }
+
+  .post-form-field input,
+  .post-form-field textarea {
+    font-size: 16px;
+  }
+
+  .post-form-field textarea {
+    min-height: 180px;
+  }
+
+  .post-composer-form > button {
+    width: 100%;
+    min-height: 44px;
   }
 
   .page-content > form input,
   .page-content > form textarea {
     flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    font-size: 16px;
   }
 
-  .page-content table {
+  .table-scroll table {
     min-width: 560px;
   }
 
-  .page-content .posts-owned-table {
+  .mobile-card-table {
+    overflow: visible;
+  }
+
+  .mobile-card-table table {
+    display: block;
+    min-width: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .mobile-card-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+
+  .mobile-card-table tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  .mobile-card-table tbody tr {
+    display: block;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 5px 16px rgba(15, 23, 42, 0.05);
+  }
+
+  .mobile-card-table tbody tr:nth-child(even),
+  .mobile-card-table tbody tr:hover {
+    background: #fff;
+  }
+
+  .mobile-card-table td {
+    display: grid;
+    grid-template-columns: minmax(68px, 28%) minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    padding: 9px 2px;
+    border-top: 1px solid #edf1f6;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+
+  .mobile-card-table td:first-child {
+    border-top: 0;
+  }
+
+  .mobile-card-table td::before {
+    content: attr(data-label);
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .mobile-card-table .tag-badge {
+    justify-self: start;
+  }
+
+  .owned-posts-scroll .posts-owned-table {
     min-width: 940px;
+  }
+
+  .page-content button {
+    min-height: 42px;
+  }
+
+  .page-content .post-action-btn {
+    min-height: 34px;
+  }
+
+  .route-card {
+    min-height: 44px;
   }
 
   .flash-message {
@@ -926,8 +1098,12 @@ td form {
   }
 
   .home-hero {
-    padding: 24px 20px;
+    padding: 20px 18px;
     border-radius: 22px;
+  }
+
+  .home-hero h1 {
+    font-size: 1.55rem;
   }
 
   .home-hero-mark {
@@ -962,15 +1138,44 @@ td form {
 @media (max-width: 420px) {
   .site-nav {
     flex-direction: column;
-    align-items: stretch;
   }
 
   .site-nav-links {
-    justify-content: center;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .site-nav-logout {
-    align-self: flex-start;
+    align-self: stretch;
+  }
+
+  .home-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .home-button {
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  .route-section-heading {
+    align-items: center;
+  }
+
+  .section-count {
+    max-width: 45%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .page-content > h1 {
+    margin-bottom: 16px;
+    font-size: 1.4rem;
+  }
+
+  .flash-message {
+    line-height: 1.7;
   }
 }
 
