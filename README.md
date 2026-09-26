@@ -65,6 +65,10 @@ This project is being built incrementally; items are checked off as they're impl
 
 ## Screenshots
 
+### Home
+
+![List of blog posts](docs/screenshots/home.webp)
+
 ### Post List
 
 ![List of blog posts](docs/screenshots/list-posts.webp)

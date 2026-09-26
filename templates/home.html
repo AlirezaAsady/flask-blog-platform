@@ -1,4 +1,227 @@
 {% extends "base.html" %} {% block content %}
-<h1>وبلاگ</h1>
-<p>به وبلاگ خوش اومدید.</p>
+<div class="home-directory">
+  <section class="home-hero" aria-labelledby="home-title">
+    <div class="home-hero-copy">
+      <span class="home-eyebrow">راهنمای وبلاگ</span>
+      <h1 id="home-title">همه‌چیز، یک‌جا در دسترس شما</h1>
+      <p>
+        از اینجا می‌توانید بخش‌های عمومی وبلاگ را ببینید، وارد حساب‌تان شوید و
+        در صورت ورود، نوشته‌ها و پروفایل خود را مدیریت کنید.
+      </p>
+      <div class="home-hero-actions">
+        <a
+          class="home-button home-button-primary"
+          href="{{ url_for('posts_list_all') }}"
+          >دیدن نوشته‌ها</a
+        >
+        {% if is_authenticated %}
+        <a
+          class="home-button home-button-secondary"
+          href="{{ url_for('posts_create') }}"
+          >نوشتن مطلب</a
+        >
+        {% else %}
+        <a
+          class="home-button home-button-secondary"
+          href="{{ url_for('auth_register') }}"
+          >ساخت حساب کاربری</a
+        >
+        {% endif %}
+      </div>
+    </div>
+    <div class="home-hero-mark" aria-hidden="true">
+      <span>ب</span>
+      <i></i>
+      <i></i>
+      <i></i>
+    </div>
+  </section>
+
+  <section class="route-section" aria-labelledby="public-routes-title">
+    <div class="route-section-heading">
+      <div>
+        <span class="section-kicker">برای همه</span>
+        <h2 id="public-routes-title">بخش‌های عمومی</h2>
+      </div>
+      <span class="section-count">بدون نیاز به ورود</span>
+    </div>
+    <div class="route-grid">
+      <a class="route-card" href="{{ url_for('home') }}">
+        <span class="route-card-icon" aria-hidden="true">⌂</span>
+        <span class="route-card-content">
+          <strong>صفحه‌ی اصلی</strong>
+          <span>راهنمای بخش‌های مختلف وبلاگ</span>
+          <code>/ و /home</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+      <a class="route-card" href="{{ url_for('posts_list_all') }}">
+        <span class="route-card-icon" aria-hidden="true">▤</span>
+        <span class="route-card-content">
+          <strong>همه‌ی نوشته‌ها</strong>
+          <span>مرور نوشته‌های منتشرشده و جست‌وجوی آن‌ها</span>
+          <code>/users/posts/showall</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+      <a class="route-card" href="{{ url_for('users_list') }}">
+        <span class="route-card-icon" aria-hidden="true">♙</span>
+        <span class="route-card-content">
+          <strong>فهرست کاربران</strong>
+          <span>آشنایی با اعضای وبلاگ</span>
+          <code>/users</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+      {% if not is_authenticated %}
+      <a class="route-card" href="{{ url_for('auth_register') }}">
+        <span class="route-card-icon" aria-hidden="true">＋</span>
+        <span class="route-card-content">
+          <strong>ثبت‌نام</strong>
+          <span>حساب بسازید و به امکانات اعضا دسترسی پیدا کنید</span>
+          <code>/users/register</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+      <a class="route-card" href="{{ url_for('auth_login') }}">
+        <span class="route-card-icon" aria-hidden="true">↪</span>
+        <span class="route-card-content">
+          <strong>ورود به حساب</strong>
+          <span>برای مدیریت پروفایل و نوشته‌های خود وارد شوید</span>
+          <code>/users/login</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="route-section" aria-labelledby="tag-routes-title">
+    <div class="route-section-heading">
+      <div>
+        <span class="section-kicker">موضوعی بخوانید</span>
+        <h2 id="tag-routes-title">نوشته‌ها بر اساس برچسب</h2>
+      </div>
+      <span class="section-count">{{ tags|length }} برچسب</span>
+    </div>
+    {% if tags %}
+    <div class="home-tag-list">
+      {% for tag in tags %}
+      <a
+        class="home-tag"
+        href="{{ url_for('posts_by_tag', tag_name=tag.name) }}"
+      >
+        <span aria-hidden="true">#</span>{{ tag.name }}
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="route-empty-state">
+      هنوز برچسبی ثبت نشده است؛ با انتشار نوشته‌های برچسب‌دار، اینجا نمایش داده
+      می‌شوند.
+    </p>
+    {% endif %}
+    <p class="route-hint">
+      صفحه‌ی هر برچسب: <code>/users/posts/tag/&lt;tag_name&gt;</code>
+    </p>
+  </section>
+
+  {% if is_authenticated %}
+  <section class="route-section" aria-labelledby="member-routes-title">
+    <div class="route-section-heading">
+      <div>
+        <span class="section-kicker">ویژه‌ی اعضا</span>
+        <h2 id="member-routes-title">حساب و نوشته‌های من</h2>
+      </div>
+      <span class="section-count">نیازمند ورود</span>
+    </div>
+    <div class="route-grid">
+      <a class="route-card" href="{{ url_for('edit_account') }}">
+        <span class="route-card-icon" aria-hidden="true">⚙</span>
+        <span class="route-card-content">
+          <strong>ویرایش حساب</strong>
+          <span>به‌روزرسانی نام کاربری و اطلاعات حساب</span>
+          <code>/users/account/edit</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+      <a class="route-card" href="{{ url_for('profile_manage') }}">
+        <span class="route-card-icon" aria-hidden="true">◎</span>
+        <span class="route-card-content">
+          <strong>پروفایل من</strong>
+          <span>مدیریت معرفی‌نامه و تصویر پروفایل</span>
+          <code>/users/profile</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+      <a class="route-card" href="{{ url_for('choose_avatar') }}">
+        <span class="route-card-icon" aria-hidden="true">◉</span>
+        <span class="route-card-content">
+          <strong>انتخاب آواتار</strong>
+          <span>انتخاب تصویر از آواتارهای آماده</span>
+          <code>/users/profile/avatars</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+      <a class="route-card" href="{{ url_for('posts_create') }}">
+        <span class="route-card-icon" aria-hidden="true">✎</span>
+        <span class="route-card-content">
+          <strong>نوشتن مطلب تازه</strong>
+          <span>ساخت نوشته و افزودن برچسب به آن</span>
+          <code>/users/posts/new</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+      <a class="route-card" href="{{ url_for('posts_list_owned_update') }}">
+        <span class="route-card-icon" aria-hidden="true">▣</span>
+        <span class="route-card-content">
+          <strong>مدیریت نوشته‌های من</strong>
+          <span>ویرایش و حذف نوشته‌ها، افزودن یا برداشتن برچسب</span>
+          <code>/users/posts/show</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+    </div>
+  </section>
+  {% else %}
+  <section class="member-callout">
+    <div>
+      <span class="section-kicker">امکانات بیشتر</span>
+      <h2>با ورود به حساب، وبلاگ‌تان را بسازید</h2>
+      <p>
+        پس از ورود می‌توانید مطلب بنویسید، پروفایل‌تان را کامل کنید و نوشته‌ها
+        را مدیریت کنید.
+      </p>
+    </div>
+    <a
+      class="home-button home-button-primary"
+      href="{{ url_for('auth_login') }}"
+      >ورود به حساب</a
+    >
+  </section>
+  {% endif %}
+  <section
+    class="route-section admin-route-section"
+    aria-labelledby="admin-routes-title"
+  >
+    <div class="route-section-heading">
+      <div>
+        <span class="section-kicker">مدیریت وبلاگ</span>
+        <h2 id="admin-routes-title">ابزارهای مدیر</h2>
+      </div>
+      <span class="section-count">دسترسی محدود به مدیر</span>
+    </div>
+    <div class="route-grid">
+      <a class="route-card" href="{{ url_for('admin_tags') }}">
+        <span class="route-card-icon" aria-hidden="true">#</span>
+        <span class="route-card-content">
+          <strong>مدیریت برچسب‌ها</strong>
+          <span>ورود به پنل مدیریت برچسب‌های وبلاگ</span>
+          <code>/admin/tags</code>
+        </span>
+        <span class="route-card-arrow" aria-hidden="true">←</span>
+      </a>
+    </div>
+  </section>
+</div>
 {% endblock %}

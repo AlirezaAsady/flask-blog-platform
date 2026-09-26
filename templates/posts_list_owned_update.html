@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block content %}
-<h1>لیست کاربران</h1>
+<h1>لیست پست ها</h1>
 
 <form method="GET" action="{{ url_for('posts_list_owned_update') }}">
   <input type="text" name="title" placeholder="فیلتر با عنوان..." value="{{ title_filter }}"/>
@@ -33,7 +33,9 @@
       </td>
       <td>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
       <td>
-          <button type="submit">ویرایش</button>
+          <button type="submit" class="post-action-btn post-action-edit">
+            ویرایش
+          </button>
         </form>
       </td>
       <td>
@@ -58,7 +60,9 @@
       <td>
         <form method="POST" action="{{ url_for('posts_delete') }}">
           <input type="hidden" name="post_id" value="{{ post.post_id }}" />
-          <button type="submit">حذف</button>
+          <button type="submit" class="post-action-btn post-action-delete">
+            حذف
+          </button>
         </form>
       </td>
     </tr>

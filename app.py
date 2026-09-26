@@ -94,7 +94,17 @@ def parse_tag_input(raw_input):
 @app.route("/home")
 @app.route("/")
 def home():
-    return render_template("home.html")
+    is_authenticated = "user_id" in session
+
+    tags_success, _, tags = get_all_tags__db()
+    if not tags_success:
+        tags = []
+
+    return render_template(
+        "home.html",
+        is_authenticated=is_authenticated,
+        tags=tags,
+    )
 
 
 # ----------------* USERS *---------------------------

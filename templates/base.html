@@ -10,18 +10,34 @@
     {% block extra_css %}{% endblock %}
   </head>
   <body>
-    <nav>
-      <a href="{{ url_for('users_list') }}">کاربران</a>
-      <a href="{{ url_for('auth_register') }}">افزودن</a>
-      <a href="{{ url_for('auth_login') }}">ورود</a>
-      <form method="POST" action="{{ url_for('auth_logout') }}">
+    <nav class="site-nav" aria-label="ناوبری اصلی">
+      <div class="site-nav-links">
+        <a href="{{ url_for('home') }}">خانه</a>
+        <a href="{{ url_for('posts_list_all') }}">نوشته‌ها</a>
+        <a href="{{ url_for('users_list') }}">کاربران</a>
+        <a href="{{ url_for('admin_tags') }}">پنل مدیریت</a>
+        {% if session.get('user_id') %}
+        <a href="{{ url_for('edit_account') }}">حساب من</a>
+        <a href="{{ url_for('posts_list_owned_update') }}">نوشته‌های من</a>
+        {% else %}
+        <a href="{{ url_for('auth_register') }}">ثبت‌نام</a>
+        <a href="{{ url_for('auth_login') }}">ورود</a>
+        {% endif %}
+      </div>
+      {% if session.get('user_id') %}
+      <form
+        class="site-nav-logout"
+        method="POST"
+        action="{{ url_for('auth_logout') }}"
+      >
         <button type="submit">خروج</button>
       </form>
+      {% endif %}
     </nav>
 
-    {% block content %} {% endblock %} {% with messages =
-    get_flashed_messages(with_categories=true) %} {% if messages %} {% for
-    category, message in messages %}
+    <main class="page-content">{% block content %} {% endblock %}</main>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
     <div class="flash-message flash-{{ category }}">{{ message }}</div>
     {% endfor %} {% endif %} {% endwith %}
   </body>
